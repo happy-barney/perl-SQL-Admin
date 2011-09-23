@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -6,7 +5,6 @@ use FindBin;
 use lib map $FindBin::Bin . '/' . $_, qw( . ../lib ../lib/perl5 );
 
 use Test::More;
-END { done_testing }
 
 ######################################################################
 
@@ -52,4 +50,4 @@ use_ok ('SQL::Admin::Catalog::Table::Unique');
 use_ok ('SQL::Admin::Catalog::Table::ForeignKey');
 use_ok ('SQL::Admin::Catalog::Table::Column');
 
-
+done_testing;
