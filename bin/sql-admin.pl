@@ -30,6 +30,8 @@ main ();
 
 sub main {                               # ;
     my $action = shift @ARGV;
+    pod2usage('Unknown action')
+        unless $action && exists $action_map{$action};
     my $factory = SQL::Admin->new;
 
     my $key_alias = {
@@ -42,15 +44,20 @@ sub main {                               # ;
     GetOptions (
         my $params = {},
 
+        'help|h',
         'source|src|s=s',
         'destination|dest|dst|d=s',
         'output|out|o=s',
         'schema_only|schema-only|schema=s@',
     );
+    pod2usage if $params->{help};
 
     my @def = ();
     for my $key (grep $params->{$_}, keys %$key_alias) {
-        for my $option ($factory->get_driver ($params->{$key})->options) {
+        my $driver = $factory->get_driver ($params->{$key});
+        pod2usage('No such driver '.$params->{$key}) unless $driver;
+
+        for my $option ($driver->options) {
             my ($names, $def) = split /(?=[=])/, $option, 2;
 
             my @names;
