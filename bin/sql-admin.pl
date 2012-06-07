@@ -30,7 +30,7 @@ main ();
 
 sub main {                               # ;
     my $action = shift @ARGV;
-    pod2usage('Unknown action')
+    pod2usage('Unknown action '.$action)
         unless $action && exists $action_map{$action};
     my $factory = SQL::Admin->new;
 
@@ -168,3 +168,23 @@ sql-admin.pl
    sql-admin <action> --source <source driver> <source driver parameters>
                       --destination <destination driver> <destination driver parameters>
                       --output <output driver> <output driver parameters>
+
+        <action>   - dump or compare
+        <* driver> - Pg or DB2
+            when connecting to the database Pg::DBI or DB2::DBI
+
+    Examples:
+        sql-admin.pl dump --source Pg::DBI \
+            '--source-dbdsn=dbi:Pg:dbname=some_name;host=localhost' \
+            --source-dbusr username \
+            --source-dbpwd password \
+            --output Pg
+
+        sql-admin.pl compare
+            --source Pg::DBI \
+            '--source-dbdsn=dbi:Pg:dbname=some_name;host=localhost' \
+            --source-dbusr username \
+            --source-dbpwd password \
+            --destination Pg \
+            --source-file create.sql \
+            --output Pg
