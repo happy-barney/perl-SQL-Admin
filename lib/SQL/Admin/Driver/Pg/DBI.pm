@@ -27,6 +27,9 @@ our %TYPE_MAP = (
     date       => 'date',
     time       => 'time',
     timestamp  => 'timestamp',
+    timestamptz => 'timestamptz',
+    text       => 'text',
+    bool       => 'bool',
 );
 
 our %TYPE_WITH_SIZE = (

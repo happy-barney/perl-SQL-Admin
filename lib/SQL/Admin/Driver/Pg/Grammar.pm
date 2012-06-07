@@ -40,7 +40,7 @@ sql_command :
   | create_table
   | statement_insert
 # | connect_to
-# | create_sequence
+  | create_sequence
 # | create_view
 # | comment_on
 # | COMMIT WORK                             { +{ commit_work => 1 } }
