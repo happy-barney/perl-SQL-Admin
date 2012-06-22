@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -29,6 +30,8 @@ main ();
 
 sub main {                               # ;
     my $action = shift @ARGV;
+    pod2usage('Unknown action '.$action)
+        unless $action && exists $action_map{$action};
     my $factory = SQL::Admin->new;
 
     my $key_alias = {
@@ -41,15 +44,20 @@ sub main {                               # ;
     GetOptions (
         my $params = {},
 
+        'help|h',
         'source|src|s=s',
         'destination|dest|dst|d=s',
         'output|out|o=s',
         'schema_only|schema-only|schema=s@',
     );
+    pod2usage if $params->{help};
 
     my @def = ();
     for my $key (grep $params->{$_}, keys %$key_alias) {
-        for my $option ($factory->get_driver ($params->{$key})->options) {
+        my $driver = $factory->get_driver ($params->{$key});
+        pod2usage('No such driver '.$params->{$key}) unless $driver;
+
+        for my $option ($driver->options) {
             my ($names, $def) = split /(?=[=])/, $option, 2;
 
             my @names;
@@ -160,3 +168,23 @@ sql-admin.pl
    sql-admin <action> --source <source driver> <source driver parameters>
                       --destination <destination driver> <destination driver parameters>
                       --output <output driver> <output driver parameters>
+
+        <action>   - dump or compare
+        <* driver> - Pg or DB2
+            when connecting to the database Pg::DBI or DB2::DBI
+
+    Examples:
+        sql-admin.pl dump --source Pg::DBI \
+            '--source-dbdsn=dbi:Pg:dbname=some_name;host=localhost' \
+            --source-dbusr username \
+            --source-dbpwd password \
+            --output Pg
+
+        sql-admin.pl compare
+            --source Pg::DBI \
+            '--source-dbdsn=dbi:Pg:dbname=some_name;host=localhost' \
+            --source-dbusr username \
+            --source-dbpwd password \
+            --destination Pg \
+            --source-file create.sql \
+            --output Pg
